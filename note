@@ -1,0 +1,43 @@
+Differet URLs:
+
+https://cs132-security-group-38.herokuapp.com
+	/dashboard
+	/contributions
+	/allocations/<user number + 1>
+	/profile
+	/benefits (only as admin)
+
+
+Exploits:
+
+1. URL
+Even if not admin, can access 
+	/benefits
+	/allocations/1
+Can access other user's asset allocations
+	/allocations/2
+	/allocations/3
+
+FIX
+========
+
+2. Injection
+In /contributions, in the textbox that takes in user input as argument for eval() function, we can put in the following:
+	while(1) --> logs the user out
+	process.exit() --> throws Application Error
+	process.kill(process.pid)  --> throws Application Error
+In the same place, we can put in the following to get access to file systems:
+	res.end(require('fs').readdirSync('.').toString()) --> get current directory
+	res.end(require('fs').readdirSync('..').toString()) --> get parent directory
+Then, the attacker can read the file content with the file names obtained from above:
+	res.end(require('fs').readFileSync(filename))
+Since we were given the source code, getting file names of current directory is less interesting. However, when we move up to parent directory, we can get access to:
+	app,bin,dev,etc,home,lib,lib64,lost+found,proc,sbin,sys,tmp,usr,var
+	--> We could potentially get access to files that do not have anything to do with the website, but to files on the machine that is serving the website.
+
+FIX
+=======
+Validate user input before processing
+Do not use eval(), setTimeOut(), setInterval(), and Function()
+Use JSON.parse()
+Use strict mode by including "use strict" at the beginning of function
