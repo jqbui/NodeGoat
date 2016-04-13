@@ -22,9 +22,15 @@ function ContributionsHandler(db) {
          ** What is bad about using eval() to parse   **
          ** user input here?                          **
          ***********************************************/
-        var preTax = eval(req.body.preTax);
-        var afterTax = eval(req.body.afterTax);
-        var roth = eval(req.body.roth);
+        // var preTax = eval(req.body.preTax);
+        // var afterTax = eval(req.body.afterTax);
+        // var roth = eval(req.body.roth);
+
+        //Fix for A1 -1 SSJS Injection attacks - uses alternate method to eval
+        var preTax = parseInt(req.body.preTax);
+        var afterTax = parseInt(req.body.afterTax);
+        var roth = parseInt(req.body.roth);
+
 
         var userId = req.session.userId;
 
